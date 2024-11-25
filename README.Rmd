@@ -15,7 +15,7 @@ To install the `ADAM` package directly from GitHub, follow these steps:
 ### 1. Ensure you have the `devtools` package installed:
 
 ```{r}
-install.packages("devtools")
+#install.packages("devtools")
 ```
 
 ### 2. Install `ADAM` from GitHub and load ADAM package:
@@ -32,14 +32,15 @@ The `ADAM` package depends on several external packages. These are automatically
 #### You can install any missing dependencies manually:
 
 ```{r}
-install.packages(c("dplyr", "signtrans", "phyloseq"))
+#install.packages(c("dplyr", "signtrans", "phyloseq"))
 
 ```
 
 #### For Bioconductor packages (e.g., `ALDEx2`):
 
 ```{r}
-if (!requireNamespace("BiocManager", quietly = TRUE)) install.packages("BiocManager") BiocManager::install(c("ALDEx2", "ANCOMBC", "DESeq2"))
+#if (!requireNamespace("BiocManager", quietly = TRUE)) {
+#  install.packages("BiocManager") BiocManager::install(c("ALDEx2", "ANCOMBC", "DESeq2"))}
 ```
 
 ## Using the ADAM_main Function
@@ -49,10 +50,13 @@ The main function of the package, `ADAM_main`, performs the full ADAM workflow. 
 We use example data for scenario 3.3, which has 100 simulated dataset using the SPSimseq framework. These datasets have 250 taxa, 75 samples per group with 10% DA taxa which has been selected using a threshold of LFC=1.5 and in the setting with low sparisty. You can replace this with your dataset.
 
 ```{r}
+load("simsB_3.3_p.RData")
 data <- sim.data.bulk.p_B[[1]]
 ```
 
 Parameters: - `norm_method`: Normalization method (default: `"TSS"`). - `perc_strata`: Proportion of taxa of the original data in strata (default: `0.2`). - `OTU_replace`: Logical; Sampling with replacement (default: `TRUE`). - `threshold_value`: Logical; whether to use adaptive thresholding (default: `TRUE`). - `alpha`: Significance level for FDR control (default: `0.05`). - `B`: Number of bootstrap/permutation datasets (default: `2`). - `path`: File path to save results (default: current working directory). - `dataset`: Numeric identifier for the dataset (default: `1`).
+
+Note: Create a Folder in your working directory titled 'Variations', which is used to store the variations of the Test datasets that are created. Intermediate results (Test dataset, performance of DA methods on Variations of Test datasets, raw p-values of each test) are saved in your working directory.
 
 ### Running the Function
 
@@ -65,7 +69,7 @@ perc_strata <- 0.2
 OTU_replace <- TRUE 
 threshold_value <- TRUE 
 alpha <- 0.05 
-B <- 2 
+B <- 1 
 path <- getwd() 
 dataset <- 1
 
