@@ -1,0 +1,145 @@
+#' R-sign Methods
+#'
+#' This function applies R-sign methods for differential abundance analysis, including marginal, conditional, and RI tests.
+#'
+#' @param data A phyloseq object containing count data and metadata.
+#' @param model_R The R-sign model to apply ("All", "Marginal", or "RI").
+#'
+#' @return A list or data frame with test statistics, p-values, and adjusted p-values for the selected model.
+#'
+#' @examples
+#' \dontrun{
+#'   results <- RsignRI_test(data, model_R = "All")
+#' }
+#'
+#' @importFrom phyloseq prune_taxa merge_phyloseq sample_sums
+#' @importFrom RioNorm2 hk_find
+#' @importFrom stats p.adjust
+#' @importFrom signtrans R_sign
+#' @export
+RsignRI_test = function(data,model_R){
+  
+OTU_table = data.frame(otu_table(data))
+
+test = RioNorm2::hk_find(OTU_table)
+
+ref = test$riOTUs_ID
+
+ref_phy = prune_taxa(ref,data)
+
+ref_median = apply(data.frame(otu_table(ref_phy),row.names = NULL),2,median)
+
+`%notin%` <- Negate(`%in%`)
+data_final = subset(otu_table(data),rownames(otu_table(data)) %notin% ref)
+
+data_final <- merge_phyloseq(data_final, tax_table(data), sample_data(data))
+
+
+R_sign_results_all<-list()
+stat_Marginal_R <- data.frame()
+stat_Conditional_R <- data.frame()
+stat_RI_R <- data.frame()
+
+pval_Marginal_R <- data.frame()
+pval_Conditional_R <- data.frame()
+pval_RI_R <- data.frame()
+
+if (length(ref)!=0){
+  for (j in (1:ntaxa(data_final))){
+    # Define a dataframe with raw count of 1 taxon (column 1) and the average reference frame (column 2)
+    count=as.vector(data_final@otu_table[j,])
+    
+    med_count = c()
+    if (median(count)==0){
+      med_count = min(count[count!=0])
+    } else{
+      med_count = median(count)
+    }
+    count_med = median(count)
+    db <- data.frame(counts=count,ref=ref_median*(med_count/median(ref_median)),row.names = NULL) # db[,1]= count taxa, db[,2] = mean reference frame
+    
+    
+    # Compute Library size
+    
+    libsize <- sample_sums(data_final)
+    
+    # Define starting sample data
+    
+    sample_data(data_final)$libsize<-libsize
+    sample_data(data_final)$group<-as.numeric(sample_data(data_final)$group)
+    
+    
+    # Define model to be tested 
+    formula_R=RATIO~as.factor(group)+libsize
+    
+    # APPly R-sign methods
+    R_sign_results_all[[j]]<-signtrans::R_sign(formula_R,db,startdata=data_final,Method=model_R)
+    
+    if (model_R =='All'){
+      pval_Marginal_R <- rbind(pval_Marginal_R ,R_sign_results_all[[j]]$Marginal$Pval)
+      pval_Conditional_R <- rbind(pval_Conditional_R,R_sign_results_all[[j]]$Conditional$Pval)
+      pval_RI_R <- rbind(pval_RI_R,R_sign_results_all[[j]]$RI$Pval)
+      
+      stat_Marginal_R <- rbind(stat_Marginal_R ,R_sign_results_all[[j]]$Marginal$Teststatistic)
+      stat_Conditional_R <- rbind(stat_Conditional_R,R_sign_results_all[[j]]$Conditional$Teststatistic)
+      stat_RI_R <- rbind(stat_RI_R,R_sign_results_all[[j]]$RI$Teststatistic)
+    }
+    if (model_R =='Marginal'){
+      pval_Marginal_R <- rbind(pval_Marginal_R ,R_sign_results_all[[j]]$Pval)
+      stat_Marginal_R <- rbind(stat_Marginal_R ,R_sign_results_all[[j]]$Teststatistic)
+    }
+    if (model_R =='RI'){
+      pval_RI_R <- rbind(pval_RI_R,R_sign_results_all[[j]]$Pval)
+      stat_RI_R <- rbind(stat_RI_R,R_sign_results_all[[j]]$Teststatistic)
+    }
+    
+    
+    
+    
+  }}
+
+if (model_R =='All'){
+  adjPVals_marg <- p.adjust(unlist(pval_Marginal_R),method='BH') 
+  adjPVals_cond <- p.adjust(unlist(pval_Conditional_R),method='BH')
+  adjPVals_ri<- p.adjust(unlist(pval_RI_R),method='BH')
+  
+  Marginal = data.frame("pval" = unlist(pval_Marginal_R), "adjP" = adjPVals_marg, "stat"=unlist(stat_Marginal_R))
+  Conditional = data.frame("pval" = unlist(pval_Conditional_R), "adjP" = adjPVals_cond, "stat"=unlist(stat_Conditional_R))
+  RI = data.frame("pval" = unlist(pval_RI_R), "adjP" = adjPVals_ri, "stat"=unlist(stat_RI_R))
+  
+  rownames(otu_table(data_final)) -> rownames(Marginal)
+  rownames(otu_table(data_final)) -> rownames(Conditional)
+  rownames(otu_table(data_final)) -> rownames(RI)
+  
+  
+  out = list(Marginal = Marginal,
+             Conditional = Conditional,
+             RI = RI)
+}
+if (model_R =='Marginal'){
+  adjPVals_marg <- p.adjust(unlist(pval_Marginal_R),method='BH') 
+  
+  Marginal = data.frame("pval" = unlist(pval_Marginal_R), "adjP" = adjPVals_marg, "stat"=unlist(stat_Marginal_R))
+  
+  rownames(otu_table(data_final)) -> rownames(Marginal)
+  
+  
+  
+  out =  Marginal
+}
+if (model_R =='RI'){
+  
+  adjPVals_ri<- p.adjust(unlist(pval_RI_R),method='BH')
+  
+  RI = data.frame("pval" = unlist(pval_RI_R), "adjP" = adjPVals_ri, "stat"=unlist(stat_RI_R))
+  
+  rownames(otu_table(data_final)) -> rownames(RI)
+  
+  
+  out = RI
+}
+
+
+
+return(out)
+}
