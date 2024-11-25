@@ -8,6 +8,7 @@ date: "2024-10-25"
 
 'ADAM' is an R package designed to implement an Adaptive approach for Differential Abundance Analysis. It provides a streamlined workflow for analyzing data, selecting the best-performing method, and generating robust results.
 
+This package is still being actively developed and optimalised for user experience.
 ## Installation
 
 To install the `ADAM` package directly from GitHub, follow these steps:
@@ -92,4 +93,6 @@ The `ADAM_main` function returns a list:
 
 #### Contributing
 
-Contributions are welcome! Please submit issues or pull requests to improve the package or its documentation. This package is still being actively developed and optimalised.
+Contributions are welcome! Please submit issues or pull requests to improve the package or its documentation. 
+
+This package is still being actively developed and optimalised for user experience.
