@@ -12,20 +12,12 @@ To install the `ADAM` package directly from GitHub, follow these steps:
 
 ### 1. Ensure you have the `devtools` package installed:
 
-    #install.packages("devtools")
+    install.packages("devtools")
 
 ### 2. Install `ADAM` from GitHub and load ADAM package:
 
     devtools::install_github("lucp9827/ADAM")
-
-    ## Skipping install of 'ADAM' from a github remote, the SHA1 (249d3625) has not changed since last install.
-    ##   Use `force = TRUE` to force installation
-
     library(ADAM)
-
-    ## Registered S3 method overwritten by 'rmutil':
-    ##   method         from
-    ##   print.response httr
 
 ### Dependencies
 
