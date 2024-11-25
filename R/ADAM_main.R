@@ -38,7 +38,7 @@
 #'     alpha = alpha,
 #'     B = B,
 #'     path = path,
-#'     dataset = dataset
+#'     k = dataset
 #'   )
 #' }
 #'
