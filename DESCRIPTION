@@ -1,0 +1,24 @@
+Package: ADAM
+Title: Adaptive Differential Abundance Method
+Version: 0.0.0.1
+Authors@R: 
+    person("Leyla", "Kodalci", , "leyla.kodalci@uhasselt.be", role = c("aut", "cre"),
+           comment = c(ORCID = "YOUR-ORCID-ID"))
+Description: "This package implements the ADAM workflow for differential abundance analysis.""
+License: `use_mit_license()`, `use_gpl3_license()` or friends to pick a
+    license
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.2
+Imports: 
+    dplyr,
+    phyloseq,
+    signtrans,
+    ALDEx2,
+    ANCOMBC,
+    DESeq2,
+    MicrobiomeStat,
+    RioNorm2,
+    corncob,
+    microbiome
