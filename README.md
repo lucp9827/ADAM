@@ -6,7 +6,8 @@ analyzing data, selecting the best-performing method, and generating
 robust results.
 
 This package is still being actively developed and optimalised for user
-experience. \## Installation
+experience. 
+## Installation
 
 To install the `ADAM` package directly from GitHub, follow these steps:
 
