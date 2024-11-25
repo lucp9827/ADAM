@@ -38,7 +38,7 @@
 #'     alpha = alpha,
 #'     B = B,
 #'     path = path,
-#'     k = dataset
+#'     dataset = dataset
 #'   )
 #' }
 #'
@@ -90,7 +90,7 @@ ADAM_main <- function(
     combinations_I1 = pairwise_info$combinations_I1,
     combinations_B = pairwise_info$combinations_B,
     path = path,
-    dataset = dataset
+    k = dataset
   )
   
   # Step 4: Perform permutation/bootstrap to create variations of test data
